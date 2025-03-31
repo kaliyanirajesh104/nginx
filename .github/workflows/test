@@ -1,4 +1,4 @@
-name: Deploy Nginx to Azure VM
+name: Deploy Nginx to Azure
 
 on:
   push:
@@ -6,32 +6,29 @@ on:
       - main
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-      - name: Set up SSH
+      - name: Set Up Node.js (Optional for frontend apps)
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+          package: .
+
+      - name: Restart Nginx
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.AZURE_VM_IP }} >> ~/.ssh/known_hosts
-
-      - name: Install Nginx on Azure VM
-        run: |
-          ssh ${{ secrets.AZURE_VM_USER }}@${{ secrets.AZURE_VM_IP }} << 'EOF'
-          sudo apt update
-          sudo apt install -y nginx
-          sudo systemctl enable nginx
-          sudo systemctl start nginx
-          EOF
-
-      - name: Verify Nginx Deployment
-        run: |
-          ssh ${{ secrets.AZURE_VM_USER }}@${{ secrets.AZURE_VM_IP }} "systemctl status nginx --no-pager"
-
-      - name: Cleanup SSH Key
-        run: rm -f ~/.ssh/id_rsa
+          sudo systemctl restart nginx
