@@ -17,6 +17,7 @@ jobs:
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+          auth-type: 'sp'
 
       - name: Deploy to Azure VM
         uses: azure/webapps-deploy@v2
