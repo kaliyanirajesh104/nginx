@@ -12,7 +12,7 @@ jobs:
     steps:
       # Step 1: Checkout the code
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       # Step 2: Set up Azure CLI
       - name: Set up Azure CLI
@@ -28,9 +28,4 @@ jobs:
       - name: Deploy to Azure VM
         run: |
           ssh -o StrictHostKeyChecking=no username@20.5.194.56 "sudo apt-get update && sudo apt-get install -y nginx"
-          
-          # Copy application files (if needed)
-          # scp -o StrictHostKeyChecking=no -r * azureuser@20.5.194.56:/var/www/html/
-          
-          # Restart NGINX to apply changes
-          ssh -o StrictHostKeyChecking=no azureuser@y20.5.194.56 "sudo systemctl restart nginx"
+        
