@@ -24,19 +24,13 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      # Step 4: Set up SSH (ensure you have a private key stored in GitHub Secrets)
-      - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.5.3
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
       # Step 5: Deploy application to Azure VM
       - name: Deploy to Azure VM
         run: |
-          ssh -o StrictHostKeyChecking=no username@your-vm-ip "sudo apt-get update && sudo apt-get install -y nginx"
+          ssh -o StrictHostKeyChecking=no username@20.5.194.56 "sudo apt-get update && sudo apt-get install -y nginx"
           
           # Copy application files (if needed)
-          # scp -o StrictHostKeyChecking=no -r * username@your-vm-ip:/var/www/html/
+          # scp -o StrictHostKeyChecking=no -r * azureuser@20.5.194.56:/var/www/html/
           
           # Restart NGINX to apply changes
-          ssh -o StrictHostKeyChecking=no username@your-vm-ip "sudo systemctl restart nginx"
+          ssh -o StrictHostKeyChecking=no azureuser@y20.5.194.56 "sudo systemctl restart nginx"
