@@ -1,4 +1,4 @@
-name: Deploy to Azure VM
+name: Deploy Nginx to Azure
 
 on:
   push:
@@ -6,26 +6,29 @@ on:
       - main
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the code
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-      # Step 2: Set up Azure CLI
-      - name: Set up Azure CLI
-        uses: azure/setup-azurecli@v2
+      - name: Set Up Node.js (Optional for frontend apps)
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
 
-      # Step 3: Login to Azure
-      - name: Azure Login
-        uses: azure/login@v2
+      - name: Login to Azure
+        uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      # Step 5: Deploy application to Azure VM
-      - name: Deploy to Azure VM
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+          package: .
+
+      - name: Restart Nginx
         run: |
-          ssh -o StrictHostKeyChecking=no username@20.5.194.56 "sudo apt-get update && sudo apt-get install -y nginx"
-        
+          sudo systemctl restart nginx
