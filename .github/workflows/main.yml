@@ -12,7 +12,9 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-
+        env:
+           MY_SECRET_KEY: ${{ secrets.MY_SECRET_KEY }}
+        
       - name: Set Up Node.js (Optional for frontend apps)
         uses: actions/setup-node@v3
         with:
@@ -22,7 +24,7 @@ jobs:
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          enable-AzPSSession: true
+          
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
        
